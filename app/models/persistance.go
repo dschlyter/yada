@@ -2,7 +2,9 @@ package models
 
 import (
     "github.com/syndtr/goleveldb/leveldb"
+    "math/rand"
     "os"
+    "strconv"
 )
 
 var dbName = "level.db"
@@ -43,8 +45,7 @@ func save(data []byte) (err error) {
 }
 
 func createKey() (ret string) {
-    // TODO create timeUUID
-    ret = "key"
+    ret = "key" + "-" + strconv.Itoa(rand.Int())
     return
 }
 
@@ -57,7 +58,10 @@ func get(nextKey string, limit int) (values [][]byte, err error) {
             return nil, iter.Error()
         }
 
-        values = append(values, iter.Value())
+        // this is slightly wasteful, maybe serialize json directly
+        newBytes := make([]byte, len(iter.Value()))
+        copy(newBytes, iter.Value())
+        values = append(values, newBytes)
     }
 
     return
