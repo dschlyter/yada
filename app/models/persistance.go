@@ -3,14 +3,18 @@ package models
 import (
     "github.com/syndtr/goleveldb/leveldb"
     "math/rand"
-    "os"
     "strconv"
 )
 
-var dbName = "level.db"
 var store *leveldb.DB
 
-func InitDB() {
+const (
+    DB      = "level.db"
+    DB_TEST = "tests/test.db"
+)
+
+// These methods are not goroutine safe, use in init and testing only
+func InitDB(dbName string) {
     CloseDB()
 
     db, err := leveldb.OpenFile(dbName, nil)
@@ -28,14 +32,6 @@ func CloseDB() {
         }
         store = nil
     }
-}
-
-// Crude test fixture
-func SetTestMode() {
-    CloseDB()
-    dbName = "tests/test.db"
-    os.RemoveAll(dbName) // Wipe previous data
-    InitDB()
 }
 
 func save(keyPrefix string, data []byte) (err error) {

@@ -24,7 +24,7 @@ func init() {
     // ( order dependent )
     // revel.OnAppStart(InitDB())
     // revel.OnAppStart(FillCache())
-    models.InitDB()
+    models.InitDB(models.DB)
 }
 
 // TODO turn this into revel.HeaderFilter

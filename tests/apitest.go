@@ -5,6 +5,7 @@ import (
     "github.com/dschlyter/yada/app/models"
     "github.com/revel/revel"
     "net/url"
+    "os"
 )
 
 type ApiTest struct {
@@ -12,7 +13,14 @@ type ApiTest struct {
 }
 
 func (t *ApiTest) Before() {
-    models.SetTestMode()
+    models.CloseDB()
+    os.RemoveAll(models.DB_TEST) // Wipe previous data
+    models.InitDB(models.DB_TEST)
+}
+
+func (t *ApiTest) After() {
+    models.InitDB(models.DB)
+    models.ClearMockTime()
 }
 
 func exampleData() url.Values {
