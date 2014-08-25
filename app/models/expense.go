@@ -12,13 +12,13 @@ type Expense struct {
     Date, ReportDate        time.Time
 }
 
-func (e Expense) Save() (err error) {
-    data, err := json.Marshal(e)
+func (exp Expense) Save() (err error) {
+    data, err := json.Marshal(exp)
     if err != nil {
         return
     }
 
-    return save(data)
+    return save(exp.ReportDate.String(), data)
 }
 
 func ListExpenses() (ret []Expense, err error) {

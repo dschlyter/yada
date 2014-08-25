@@ -11,6 +11,7 @@ type Api struct {
 
 func (c Api) Add(user int, category, description string, totalAmount, owedAmount float64) revel.Result {
     newData := models.Expense{User: user, Category: category, Description: description, TotalAmount: totalAmount, OwedAmount: owedAmount}
+    newData.ReportDate = models.GetTime()
     err := newData.Save()
 
     if err == nil {

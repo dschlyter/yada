@@ -44,11 +44,36 @@ func (t ApiTest) TestAddTwoExpenses() {
     panicOn(json.Unmarshal(t.ResponseBody, &result))
 
     t.AssertEqual(2, len(result))
-    //t.AssertEqual("stuff2", result[0].Category)
-    //t.AssertEqual("stuff", result[1].Category)
     t.AssertOk()
 }
 
+func (t ApiTest) TestExpensesSortedByTime() {
+    v := url.Values{}
+    v.Set("category", "stuff")
+    panicOn(models.SetMockTime("2014-08-25T22:00:00"))
+    t.PostForm("/api/add", v)
+    t.AssertOk()
+
+    v.Set("category", "stuff2")
+    panicOn(models.SetMockTime("2014-08-25T21:00:00"))
+    t.PostForm("/api/add", v)
+    t.AssertOk()
+
+    v.Set("category", "stuff3")
+    panicOn(models.SetMockTime("2014-08-25T23:00:00"))
+    t.PostForm("/api/add", v)
+    t.AssertOk()
+
+    t.Get("/api/list")
+    result := []models.Expense{}
+    panicOn(json.Unmarshal(t.ResponseBody, &result))
+
+    t.AssertEqual(3, len(result))
+    t.AssertEqual("stuff2", result[0].Category)
+    t.AssertEqual("stuff", result[1].Category)
+    t.AssertEqual("stuff3", result[2].Category)
+    t.AssertOk()
+}
 func panicOn(err error) {
     if err != nil {
         panic(err)

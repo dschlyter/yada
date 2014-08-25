@@ -38,14 +38,14 @@ func SetTestMode() {
     InitDB()
 }
 
-func save(data []byte) (err error) {
-    key := []byte(createKey())
+func save(keyPrefix string, data []byte) (err error) {
+    key := []byte(createKey(keyPrefix))
     err = store.Put(key, data, nil)
     return
 }
 
-func createKey() (ret string) {
-    ret = "key" + "-" + strconv.Itoa(rand.Int())
+func createKey(keyPrefix string) (ret string) {
+    ret = keyPrefix + "-" + strconv.Itoa(rand.Int())
     return
 }
 
