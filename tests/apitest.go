@@ -15,9 +15,19 @@ func (t *ApiTest) Before() {
     models.SetTestMode()
 }
 
+func exampleData() url.Values {
+    ret := url.Values{}
+    ret.Set("user", "1")
+    ret.Set("category", "stuff")
+    ret.Set("date", "2010-01-02T20:03:04Z")
+    ret.Set("description", "some stuff")
+    ret.Set("totalAmount", "100")
+    ret.Set("owedAmount", "60")
+    return ret
+}
+
 func (t ApiTest) TestAddExpense() {
-    v := url.Values{}
-    v.Set("category", "stuff")
+    v := exampleData()
     t.PostForm("/api/add", v)
     t.AssertOk()
 
@@ -30,12 +40,10 @@ func (t ApiTest) TestAddExpense() {
 }
 
 func (t ApiTest) TestAddTwoExpenses() {
-    v := url.Values{}
-    v.Set("category", "stuff")
+    v := exampleData()
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    v.Set("category", "stuff2")
     t.PostForm("/api/add", v)
     t.AssertOk()
 
@@ -48,18 +56,18 @@ func (t ApiTest) TestAddTwoExpenses() {
 }
 
 func (t ApiTest) TestExpensesSortedByTime() {
-    v := url.Values{}
-    v.Set("category", "stuff")
+    v := exampleData()
+    v.Set("description", "stuff")
     panicOn(models.SetMockTime("2014-08-25T22:00:00"))
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    v.Set("category", "stuff2")
+    v.Set("description", "stuff2")
     panicOn(models.SetMockTime("2014-08-25T21:00:00"))
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    v.Set("category", "stuff3")
+    v.Set("description", "stuff3")
     panicOn(models.SetMockTime("2014-08-25T23:00:00"))
     t.PostForm("/api/add", v)
     t.AssertOk()
@@ -69,11 +77,33 @@ func (t ApiTest) TestExpensesSortedByTime() {
     panicOn(json.Unmarshal(t.ResponseBody, &result))
 
     t.AssertEqual(3, len(result))
-    t.AssertEqual("stuff2", result[0].Category)
-    t.AssertEqual("stuff", result[1].Category)
-    t.AssertEqual("stuff3", result[2].Category)
+    t.AssertEqual("stuff2", result[0].Description)
+    t.AssertEqual("stuff", result[1].Description)
+    t.AssertEqual("stuff3", result[2].Description)
     t.AssertOk()
 }
+
+func (t ApiTest) TestValidateTotalAmount() {
+    v := exampleData()
+    v.Set("totalAmount", "0")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
+func (t ApiTest) TestValidateOwedAmount() {
+    v := exampleData()
+    v.Set("owedAmount", "-9000")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
+func (t ApiTest) TestValidateDate() {
+    v := exampleData()
+    v.Set("date", "this is an invalid date")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
 func panicOn(err error) {
     if err != nil {
         panic(err)
