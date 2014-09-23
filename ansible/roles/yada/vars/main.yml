@@ -1,0 +1,7 @@
+---
+yada_pkg: "github.com/dschlyter/yada/"
+yada_src: "{{ gopath }}/src/{{ yada_pkg }}"
+service_user: yada
+server_name: matkop.{{ domain }}
+revel_port: 9006
+work_dir: "/var/opt/lib/yada"

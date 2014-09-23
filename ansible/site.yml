@@ -1,0 +1,7 @@
+---
+- hosts: webservers
+  sudo: yes
+  roles:
+    - nginx
+    - revel
+    - yada

@@ -1,0 +1,51 @@
+---
+# TODO a less ad hoc dependency solution - use godep for this and revel install ?
+- name: install level.db
+  command: >
+    go get github.com/syndtr/goleveldb/leveldb
+    creates={{ gopath }}/src/github.com/syndtr/goleveldb
+  environment: 
+    GOPATH: "{{ gopath }}"
+
+- name: install upstart script
+  template: src=upstart-yada.conf dest=/etc/init/yada.conf
+
+- name: take down service (always changed)
+  service: name=yada state=stopped
+
+- name: create service group
+  group: name={{ service_user }}
+
+- name: create service user
+  user: name={{ service_user }} group={{ service_user }}
+
+- name: create workdir
+  file: path={{ work_dir }} state=directory owner={{ service_user }} mode=755
+
+# some roles below are messy with permissions because of limitations in rsync module and where revel writes files
+# the swapping of permissions will lead to state always being changed
+
+- name: create source dir (always changed)
+  file: path={{ yada_src }} state=directory owner={{ ansible_env.SUDO_USER }} recurse=yes
+  
+- name: install files (always changed)
+  synchronize: src=../../../../ dest={{ yada_src }} delete=yes
+  # define files to exclude in .rsync-filter (YAML format)
+  sudo: no 
+  # rsync does not handle sudo properly when password is required
+  # unless security is relaxed with !tty_tickets
+     
+# allow revel to mess around in the app dir...
+- name: set yada/app permissions (always changed)
+  file: path={{ yada_src }}/app group={{ service_user }} mode=775 recurse=yes
+
+# revel compiles executable to this dir
+- name: set go/bin permissions
+  file: path={{ gopath }}/bin group={{ service_user }} mode=775
+
+- name: start service (always changed)
+  service: name=yada state=started
+
+- name: install nginx redirect
+  template: src=nginx-yada.conf dest=/etc/nginx/sites-enabled/yada.conf
+  notify: restart nginx
