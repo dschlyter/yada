@@ -112,6 +112,27 @@ func (t ApiTest) TestValidateDate() {
     t.AssertStatus(400)
 }
 
+func (t ApiTest) TestValidateUserExists() {
+    v := exampleData()
+    v.Del("user")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
+func (t ApiTest) TestValidateUserValid() {
+    v := exampleData()
+    v.Set("user", "29")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
+func (t ApiTest) TestValidateCategoryExists() {
+    v := exampleData()
+    v.Del("category")
+    t.PostForm("/api/add", v)
+    t.AssertStatus(400)
+}
+
 func panicOn(err error) {
     if err != nil {
         panic(err)
