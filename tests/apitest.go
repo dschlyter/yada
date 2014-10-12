@@ -6,6 +6,7 @@ import (
     "github.com/revel/revel"
     "net/url"
     "os"
+    "runtime/debug"
 )
 
 type ApiTest struct {
@@ -39,7 +40,7 @@ func (t ApiTest) TestAddExpense() {
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    t.Get("/api/list")
+    t.Get("/api/list?user=1")
     result := []models.Expense{}
     panicOn(json.Unmarshal(t.ResponseBody, &result))
 
@@ -55,7 +56,7 @@ func (t ApiTest) TestAddTwoExpenses() {
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    t.Get("/api/list")
+    t.Get("/api/list?user=1")
     result := []models.Expense{}
     panicOn(json.Unmarshal(t.ResponseBody, &result))
 
@@ -63,7 +64,7 @@ func (t ApiTest) TestAddTwoExpenses() {
     t.AssertOk()
 }
 
-func (t ApiTest) TestExpensesSortedByTime() {
+func (t ApiTest) addThreeThings(user string) []models.Expense {
     v := exampleData()
     v.Set("description", "stuff")
     panicOn(models.SetMockTime("2014-08-25T22:00:00"))
@@ -76,19 +77,43 @@ func (t ApiTest) TestExpensesSortedByTime() {
     t.AssertOk()
 
     v.Set("description", "stuff3")
+    v.Set("user", "2")
+    v.Set("owedAmount", "20")
     panicOn(models.SetMockTime("2014-08-25T23:00:00"))
     t.PostForm("/api/add", v)
     t.AssertOk()
 
-    t.Get("/api/list")
+    t.Get("/api/list?user=" + user)
+    t.AssertOk()
     result := []models.Expense{}
     panicOn(json.Unmarshal(t.ResponseBody, &result))
 
+    return result
+}
+
+func (t ApiTest) TestExpensesSortedDescendingByTime() {
+    result := t.addThreeThings("1")
+
     t.AssertEqual(3, len(result))
-    t.AssertEqual("stuff2", result[0].Description)
+    t.AssertEqual("stuff3", result[0].Description)
     t.AssertEqual("stuff", result[1].Description)
-    t.AssertEqual("stuff3", result[2].Description)
-    t.AssertOk()
+    t.AssertEqual("stuff2", result[2].Description)
+}
+
+func (t ApiTest) TestExpenseSummingForUser1() {
+    result := t.addThreeThings("1")
+
+    t.AssertEqual(100, result[0].Balance)
+    t.AssertEqual(120, result[1].Balance)
+    t.AssertEqual(60, result[2].Balance)
+}
+
+func (t ApiTest) TestExpenseSummingForUser2() {
+    result := t.addThreeThings("2")
+
+    t.AssertEqual(-100, result[0].Balance)
+    t.AssertEqual(-120, result[1].Balance)
+    t.AssertEqual(-60, result[2].Balance)
 }
 
 func (t ApiTest) TestValidateTotalAmount() {
@@ -135,6 +160,7 @@ func (t ApiTest) TestValidateCategoryExists() {
 
 func panicOn(err error) {
     if err != nil {
+        debug.PrintStack()
         panic(err)
     }
 }

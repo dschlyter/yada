@@ -11,7 +11,7 @@ type Api struct {
     *revel.Controller
 }
 
-func (c Api) Add(user int, category, description, date string, totalAmount, owedAmount float64) revel.Result {
+func (c Api) Add(user int, category, description, date string, totalAmount, owedAmount int) revel.Result {
     newData, validationError := parse(user, category, description, date, totalAmount, owedAmount)
 
     if validationError != nil {
@@ -29,7 +29,7 @@ func (c Api) Add(user int, category, description, date string, totalAmount, owed
     return c.RenderJson(models.ReturnSuccess())
 }
 
-func parse(user int, category, description, date string, totalAmount, owedAmount float64) (models.Expense, error) {
+func parse(user int, category, description, date string, totalAmount, owedAmount int) (models.Expense, error) {
     newData := models.Expense{User: user, Category: category, Description: description, TotalAmount: totalAmount, OwedAmount: owedAmount}
     newData.ReportDate = models.GetTime()
 
@@ -53,19 +53,45 @@ func validate(data models.Expense) error {
     if len(data.Category) <= 0 {
         return errors.New("Category required")
     }
-    if data.User != 1 && data.User != 2 {
+    err := validateUser(data.User)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func validateUser(user int) error {
+    if user != 1 && user != 2 {
         return errors.New("User must be 1 or 2")
     }
 
     return nil
 }
 
-func (c Api) List(nextKey string) revel.Result {
-    list, err := models.ListExpenses()
+func (c Api) List(nextKey string, user, limit int) revel.Result {
+    err := validateUser(user)
 
+    var list []models.Expense
     if err == nil {
-        return c.RenderJson(list)
-    } else {
+        list, err = models.ListExpenses()
+    }
+
+    if err != nil {
         return c.RenderError(err)
     }
+
+    // TODO more optimized balance calculation, without iterating trough all values, if needed
+    balance := 0
+    for i := len(list) - 1; i >= 0; i-- {
+        expense := &list[i]
+        if user == expense.User {
+            balance += expense.OwedAmount
+        } else {
+            balance -= expense.OwedAmount
+        }
+        expense.Balance = balance
+    }
+
+    return c.RenderJson(list)
 }

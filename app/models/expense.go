@@ -8,8 +8,9 @@ import (
 type Expense struct {
     User                    int
     Category, Description   string
-    TotalAmount, OwedAmount float64
+    TotalAmount, OwedAmount int
     Date, ReportDate        time.Time
+    Balance                 int // Not used for input / storage for now
 }
 
 func (exp Expense) Save() (err error) {

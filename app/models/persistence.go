@@ -45,11 +45,13 @@ func createKey(keyPrefix string) (ret string) {
     return
 }
 
+// TODO actually care about limit on persistance side?
 func get(nextKey string, limit int) (values [][]byte, err error) {
     iter := store.NewIterator(nil, nil)
     defer iter.Release()
 
-    for iter.Next() {
+    keyExists := iter.Last()
+    for keyExists {
         if iter.Error() != nil {
             return nil, iter.Error()
         }
@@ -58,6 +60,8 @@ func get(nextKey string, limit int) (values [][]byte, err error) {
         newBytes := make([]byte, len(iter.Value()))
         copy(newBytes, iter.Value())
         values = append(values, newBytes)
+
+        keyExists = iter.Prev()
     }
 
     return
