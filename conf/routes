@@ -6,6 +6,10 @@ module:testrunner
 
 GET     /                                       Static.Serve("public","index.html")
 
+# Api endpoints
+GET     /api/expenses                           Api.List
+POST    /api/expenses                           Api.Add
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 

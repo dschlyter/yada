@@ -38,10 +38,10 @@ func exampleData() url.Values {
 
 func (t ApiTest) TestAddExpense() {
 	v := exampleData()
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
-	t.Get("/api/list?user=1")
+	t.Get("/api/expenses?user=1")
 	result := []models.Expense{}
 	panicOn(json.Unmarshal(t.ResponseBody, &result))
 
@@ -51,13 +51,13 @@ func (t ApiTest) TestAddExpense() {
 
 func (t ApiTest) TestAddTwoExpenses() {
 	v := exampleData()
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
-	t.Get("/api/list?user=1")
+	t.Get("/api/expenses?user=1")
 	result := []models.Expense{}
 	panicOn(json.Unmarshal(t.ResponseBody, &result))
 
@@ -69,22 +69,22 @@ func (t ApiTest) addThreeThings(user string) []models.Expense {
 	v := exampleData()
 	v.Set("description", "stuff")
 	panicOn(models.SetMockTime("2014-08-25T22:00:00"))
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
 	v.Set("description", "stuff2")
 	panicOn(models.SetMockTime("2014-08-25T21:00:00"))
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
 	v.Set("description", "stuff3")
 	v.Set("user", "2")
 	v.Set("owedAmount", "20")
 	panicOn(models.SetMockTime("2014-08-25T23:00:00"))
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
-	t.Get("/api/list?user=" + user)
+	t.Get("/api/expenses?user=" + user)
 	t.AssertOk()
 	result := []models.Expense{}
 	panicOn(json.Unmarshal(t.ResponseBody, &result))
@@ -120,42 +120,42 @@ func (t ApiTest) TestExpenseSummingForUser2() {
 func (t ApiTest) TestValidateTotalAmount() {
 	v := exampleData()
 	v.Set("totalAmount", "0")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateOwedAmount() {
 	v := exampleData()
 	v.Set("owedAmount", "-9000")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateDate() {
 	v := exampleData()
 	v.Set("date", "this is an invalid date")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateUserExists() {
 	v := exampleData()
 	v.Del("user")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateUserValid() {
 	v := exampleData()
 	v.Set("user", "29")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateCategoryExists() {
 	v := exampleData()
 	v.Del("category")
-	t.PostForm("/api/add", v)
+	t.PostForm("/api/expenses", v)
 	t.AssertStatus(400)
 }
 
