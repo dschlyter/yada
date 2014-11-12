@@ -8,7 +8,10 @@ app.controller('MainController', function($scope, $resource) {
     // TODO cateogires with default amounts and allowance per user
     $scope.categories = [ "Mat", "Gemensamt", "Eget inkop", "Betalning" ];
 
-    $scope.expenses = api.query({user: 1});
+    var refresh = function() {
+        $scope.expenses = api.query({user: 1});
+    }
+    refresh();
 
     $scope.newExpense = {
         user: 1, // TODO save last selected user
@@ -17,6 +20,14 @@ app.controller('MainController', function($scope, $resource) {
     }
 
     $scope.submitExpense = function() {
-        api.save($scope.newExpense, {});
+        api.save($scope.newExpense, {}, function() {
+            refresh();
+        }, function(error) {
+           $scope.error = error.data.Error;
+        });
+    }
+
+    $scope.dismissError = function() {
+        $scope.error = null;
     }
 });

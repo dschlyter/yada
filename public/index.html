@@ -22,6 +22,12 @@
         <h2>Add new expense</h2>
 
         <form class="form-horizontal" role="form">
+          <div class="alert alert-danger alert-dismissible" role="alert" ng-if="error">
+            <button type="button" class="close" data-dismiss="alert">
+              <span aria-hidden="true" ng-click="dismissError()">&times;</span><span class="sr-only">Close</span></button>
+            <strong>Invalid input!</strong> {{error}}
+          </div>
+
           <div class="form-group">
             <label class="col-sm-2 control-label">User</label>
             <div class="col-sm-6">
@@ -85,24 +91,24 @@
         <table class="table table-striped">
           <thead>
             <tr>
+              <th>Report Date</th>
+              <th>Date</th>
               <th>User</th>
               <th>Category</th>
               <th>Desc</th>
               <th>Total</th>
-              <th>Date</th>
-              <th>Report Date</th>
               <th>Owed</th>
               <th>Balance</th>
             </tr>
           </thead>
           <tbody>
             <tr ng-repeat="expense in expenses">
-              <td>{{users[expense.User - 1]}}</td>
-              <td>{{expense.Category}}</td>
-              <td>{{expense.Desc}}</td>
-              <td>{{expense.TotalAmount}}</td>
               <td>{{expense.Date | date:'yyyy-MM-dd'}}</td>
               <td>{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
+              <td>{{users[expense.User - 1]}}</td>
+              <td>{{expense.Category}}</td>
+              <td>{{expense.Description}}</td>
+              <td>{{expense.TotalAmount}}</td>
               <td>{{expense.OwedAmount}}</td>
               <td>{{expense.Balance}}</td>
             </tr>
