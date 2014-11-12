@@ -9,45 +9,105 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/css/yada.css">
     <link rel="shortcut icon" type="image/png" href="/public/img/favicon.png">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0/angular-resource.js"></script>
+    <script src="/public/app.js"></script>
   </head>
 
-  <body ng-app>
-    <div class="container">
+  <body ng-app="app">
+    <div class="container" ng-controller="MainController">
+      <h1>Yet Another Debt App</h1>
+
       <div class="row">
-        <div class="col-md-4">
-          <h1>Hello {{ hello }}</h1>
-          <input type="text" class="form-control" ng-model="hello"/>
-        </div>
+        <h2>Add new expense</h2>
+
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label class="col-sm-2 control-label">User</label>
+            <div class="col-sm-6">
+              <select class="form-control" ng-model="newExpense.user">
+                <option ng-repeat="user in users" value="{{$index + 1}}">{{user}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Category</label>
+            <div class="col-sm-6">
+              <select class="form-control" 
+                ng-model="newExpense.category" 
+                ng-options="category for category in categories">
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Total</label>
+            <div class="col-sm-6">
+              <input class="form-control" type="number" ng-model="newExpense.totalAmount"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-6">
+              <input class="form-control" type="text" ng-model="newExpense.description"/>
+            </div>
+          </div>
+
+          <!-- TODO fold out advanced -->
+
+          <!-- TODO date -->
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Owed</label>
+            <div class="col-sm-6">
+              <input class="form-control" type="number" ng-model="newExpense.owedAmount"/>
+            </div>
+          </div>
+
+          <!-- TODO extra (ie. 10 kr more expensive) -->
+
+          <!-- TODO percentage owed amount -->
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label"></label>
+            <div class="col-sm-6">
+              <button type="button" class="btn btn-success" ng-click="submitExpense()">Add</button>
+            </div>
+          </div>
+        </form>
       </div>
 
-      <!-- Example row of columns -->
       <div class="row">
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+        <h2>History</h2>
 
-          <h1>Hello {{ hello }}</h1>
-          <input type="text" class="form-control" ng-model="hello"/>
-        </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Heading</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
-        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Category</th>
+              <th>Desc</th>
+              <th>Total</th>
+              <th>Date</th>
+              <th>Report Date</th>
+              <th>Owed</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="expense in expenses">
+              <td>{{users[expense.User - 1]}}</td>
+              <td>{{expense.Category}}</td>
+              <td>{{expense.Desc}}</td>
+              <td>{{expense.TotalAmount}}</td>
+              <td>{{expense.Date | date:'yyyy-MM-dd'}}</td>
+              <td>{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
+              <td>{{expense.OwedAmount}}</td>
+              <td>{{expense.Balance}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
-      <hr>
-
-      <footer>
-        <p>© Company 2014</p>
-      </footer>
-    </div>
   </body>
 </html>
