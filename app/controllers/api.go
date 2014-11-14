@@ -45,12 +45,6 @@ func parse(user int, category, description, date string, totalAmount, owedAmount
 }
 
 func validate(data models.Expense) error {
-	if data.TotalAmount <= 0.0 {
-		return errors.New("Positive totalAmount required")
-	}
-	if data.OwedAmount <= 0.0 {
-		return errors.New("Positive owedAmount required")
-	}
 	if len(data.Category) <= 0 {
 		return errors.New("Category required")
 	}
