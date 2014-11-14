@@ -20,6 +20,7 @@ app.controller('MainController', function($scope, $resource) {
     }
 
     $scope.submitExpense = function() {
+        $scope.dismissError()
         api.save($scope.newExpense, {}, function() {
             refresh();
         }, function(error) {
