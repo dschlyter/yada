@@ -119,11 +119,13 @@ func (t ApiTest) TestExpenseSummingForUser2() {
 
 func (t ApiTest) TestNegativeAmount_AllowedAndDecreasesSum() {
 	v := exampleData()
+	v.Set("totalAmount", "-7000")
 	v.Set("owedAmount", "-5000")
 	t.PostForm("/api/expenses", v)
 	t.AssertOk()
 
 	v = exampleData()
+	v.Set("totalAmount", "6000")
 	v.Set("owedAmount", "4950")
 	t.PostForm("/api/expenses", v)
 	t.AssertOk()
@@ -133,6 +135,22 @@ func (t ApiTest) TestNegativeAmount_AllowedAndDecreasesSum() {
 	result := []models.Expense{}
 	panicOn(json.Unmarshal(t.ResponseBody, &result))
 	t.AssertEqual(-50, result[0].Balance)
+}
+
+func (t ApiTest) TestValidateOwedAmountOverTotal_NotAllowed() {
+	v := exampleData()
+	v.Set("totalAmount", "500")
+	v.Set("owedAmount", "700")
+	t.PostForm("/api/expenses", v)
+	t.AssertStatus(400)
+}
+
+func (t ApiTest) TestValidateNegativeOwedAmountUnderTotal_NotAllowed() {
+	v := exampleData()
+	v.Set("totalAmount", "-500")
+	v.Set("owedAmount", "-700")
+	t.PostForm("/api/expenses", v)
+	t.AssertStatus(400)
 }
 
 func (t ApiTest) TestValidateDate() {

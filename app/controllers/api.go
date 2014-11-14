@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"math"
 	"time"
 
 	"github.com/dschlyter/yada/app/models"
@@ -45,6 +46,9 @@ func parse(user int, category, description, date string, totalAmount, owedAmount
 }
 
 func validate(data models.Expense) error {
+	if math.Abs(float64(data.TotalAmount)) < math.Abs(float64(data.OwedAmount)) {
+		return errors.New("Owed amount cannot be larger than total")
+	}
 	if len(data.Category) <= 0 {
 		return errors.New("Category required")
 	}
