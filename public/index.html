@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/public/css/yada.css">
     <link rel="shortcut icon" type="image/png" href="/public/img/favicon.png">
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0/angular-resource.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular-resource.js"></script>
     <script src="/public/app.js"></script>
   </head>
 
@@ -53,7 +53,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">Total</label>
               <div class="col-sm-6">
-                <input class="form-control" type="number" ng-model="newExpense.totalAmount"/>
+                <input class="form-control" type="number" ng-model="newExpense.totalAmount" ng-change="totalChanged()"/>
               </div>
             </div>
 
@@ -65,24 +65,45 @@
             </div>
 
             <!-- TODO fold out advanced -->
+            <div ng-show="showAdvanced">
 
-            <!-- TODO date -->
-
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Owed</label>
-              <div class="col-sm-6">
-                <input class="form-control" type="number" ng-model="newExpense.owedAmount"/>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Date</label>
+                <div class="col-sm-6">
+                  <!-- TODO date input -->
+                </div>
               </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Percentage</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="number" ng-model="percentage" ng-change="percentageChanged()"/>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Owed</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="number" ng-model="newExpense.owedAmount" ng-change="owedChanged()"/>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Diff</label>
+                <div class="col-sm-6">
+                  <input class="form-control" type="number" ng-model="diff" ng-change="diffChanged()"/>
+                </div>
+              </div>
+
             </div>
-
-            <!-- TODO extra (ie. 10 kr more expensive) -->
-
-            <!-- TODO percentage owed amount -->
 
             <div class="form-group">
               <label class="col-sm-2 control-label"></label>
               <div class="col-sm-6">
-                <button type="submit" class="btn btn-success">Add</button>
+                <button type="button" class="btn btn-default pull-right" ng-click="showAdvanced = !showAdvanced">
+                  Toggle Advanced
+                </button>
+                <button type="submit" class="btn btn-success">Add Expense</button>
               </div>
             </div>
           </form>
@@ -108,8 +129,8 @@
             </thead>
             <tbody>
             <tr ng-repeat="expense in expenses">
-              <td>{{expense.Date | date:'yyyy-MM-dd'}}</td>
               <td>{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
+              <td>{{expense.Date | date:'yyyy-MM-dd'}}</td>
               <td>{{users[expense.User - 1]}}</td>
               <td>{{expense.Category}}</td>
               <td>{{expense.Description}}</td>
