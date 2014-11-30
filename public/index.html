@@ -129,7 +129,8 @@
               </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="expense in expenses">
+            <tr ng-repeat="expense in expenses" 
+              ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0}">
               <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
               <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
               <td>{{users[expense.User - 1].name}}</td>
@@ -137,7 +138,7 @@
               <td class="col-sm-5 hidden-xs">{{expense.Description}}</td>
               <td>{{expense.TotalAmount}}</td>
               <td>{{expense.OwedAmount}}</td>
-              <td>{{expense.Balance}}</td>
+              <td>{{(user === 1 ? 1 : -1) * expense.Balance}}</td>
             </tr>
             </tbody>
           </table>
