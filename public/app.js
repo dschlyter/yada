@@ -31,7 +31,7 @@ app.controller('MainController', function($scope, $resource) {
   var initExpense = function() {
     $scope.newExpense = {
       user: $scope.user,
-      category: $scope.category,
+      category: $scope.category.title,
       date: $scope.date
     }
   }

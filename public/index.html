@@ -101,10 +101,10 @@
             <div class="form-group">
               <label class="col-sm-2 control-label"></label>
               <div class="col-sm-6">
-                <button type="button" class="btn btn-default pull-right" ng-click="showAdvanced = !showAdvanced">
+                <button type="button" class="btn btn-default" ng-click="showAdvanced = !showAdvanced">
                   Toggle Advanced
                 </button>
-                <button type="submit" class="btn btn-success">Add Expense</button>
+                <button type="submit" class="btn btn-success pull-right">Add Expense</button>
               </div>
             </div>
           </form>
@@ -118,11 +118,11 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>Report Date</th>
-                <th>Date</th>
+                <th class="hidden-xs">Report Date</th>
+                <th class="hidden-xs">Date</th>
                 <th>User</th>
                 <th>Category</th>
-                <th>Desc</th>
+                <th class="hidden-xs">Desc</th>
                 <th>Total</th>
                 <th>Owed</th>
                 <th>Balance</th>
@@ -130,11 +130,11 @@
             </thead>
             <tbody>
             <tr ng-repeat="expense in expenses">
-              <td>{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
-              <td>{{expense.Date | date:'yyyy-MM-dd'}}</td>
+              <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
+              <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
               <td>{{users[expense.User - 1].name}}</td>
               <td>{{expense.Category}}</td>
-              <td>{{expense.Description}}</td>
+              <td class="col-sm-5 hidden-xs">{{expense.Description}}</td>
               <td>{{expense.TotalAmount}}</td>
               <td>{{expense.OwedAmount}}</td>
               <td>{{expense.Balance}}</td>
@@ -143,5 +143,7 @@
           </table>
         </div>
       </div>
+
+    </div>
   </body>
 </html>
