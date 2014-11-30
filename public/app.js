@@ -30,6 +30,8 @@ app.controller('MainController', function($scope, $resource) {
 
   var initExpense = function() {
     $scope.newExpense = {
+      user: $scope.user,
+      category: $scope.category,
       date: $scope.date
     }
   }
@@ -52,8 +54,7 @@ app.controller('MainController', function($scope, $resource) {
     $scope.newExpense.category = $scope.category.title;
     var otherUser = $scope.newExpense.user == 1 ? 2 : 1;
     $scope.percentage = $scope.category.split[otherUser - 1];
-
-    calcOwedFromPercentage();
+    $scope.percentageChanged();
   }
 
   // Four inputs depend on each other, recalc all when they change
@@ -100,12 +101,6 @@ app.controller('MainController', function($scope, $resource) {
   }
 
   $scope.submitExpense = function() {
-    // TODO 0 is allowed + better form validation
-    if (!$scope.newExpense.totalAmount || !$scope.newExpense.owedAmount) {
-      $scope.error = "Total and owed must be defined";
-      return;
-    }
-
     $scope.dismissError();
     api.save($scope.newExpense, {}, function() {
       initExpense();

@@ -21,7 +21,7 @@
         <div class="col-sm-12">
           <h2>Add new expense</h2>
 
-          <form class="form-horizontal" role="form" ng-submit="submitExpense()">
+          <form class="form-horizontal" name="form" role="form" ng-submit="submitExpense()">
 
             <div class="alert alert-danger alert-dismissible" role="alert" ng-if="error">
               <button type="button" class="close" data-dismiss="alert">
@@ -33,7 +33,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">User</label>
               <div class="col-sm-6">
-                <select class="form-control" 
+                <select class="form-control" required
                   ng-model="user"
                   ng-options="user.id as user.name for user in users"
                   ng-change="userChanged()">
@@ -44,7 +44,7 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">Category</label>
               <div class="col-sm-6">
-                <select class="form-control" 
+                <select class="form-control" required
                   ng-model="category" 
                   ng-options="category as category.title for category in availableCategories"
                   ng-change="categoryChanged()">
@@ -52,10 +52,10 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" ng-class="{'has-error': form.total.$invalid && form.total.$dirty}">
               <label class="col-sm-2 control-label">Total</label>
               <div class="col-sm-6">
-                <input class="form-control" type="number" ng-model="newExpense.totalAmount" ng-change="totalChanged()"/>
+                <input class="form-control" name="total" type="number" required ng-model="newExpense.totalAmount" ng-change="totalChanged()"/>
               </div>
             </div>
 
@@ -71,28 +71,28 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label">Date</label>
                 <div class="col-sm-6">
-                  <!-- TODO date input -->
+                  TODO
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" ng-class="{'has-error': form.percentage.$invalid}">
                 <label class="col-sm-2 control-label">Percentage</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="number" ng-model="percentage" ng-change="percentageChanged()"/>
+                  <input class="form-control" name="percentage" type="number" min="0" max="100" ng-model="percentage" ng-change="percentageChanged()"/>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" ng-class="{'has-error': form.owed.$invalid}">
                 <label class="col-sm-2 control-label">Owed</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="number" ng-model="newExpense.owedAmount" ng-change="owedChanged()"/>
+                  <input class="form-control" name="owed" type="number" ng-model="newExpense.owedAmount" ng-change="owedChanged()"/>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" ng-class="{'has-error': form.diff.$invalid}">
                 <label class="col-sm-2 control-label">Diff</label>
                 <div class="col-sm-6">
-                  <input class="form-control" type="number" ng-model="diff" ng-change="diffChanged()"/>
+                  <input class="form-control" name="diff" type="number" ng-model="diff" ng-change="diffChanged()"/>
                 </div>
               </div>
 
