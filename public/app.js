@@ -4,27 +4,56 @@ app.controller('MainController', function($scope, $resource) {
   var api = $resource('api/expenses');
 
   // Hardcoded settings for now
-  $scope.users = [ "David", "Sofie" ];
-  // TODO cateogires with default amounts and allowance per user
-  $scope.categories = [ "Mat", "Gemensamt", "Eget inkop", "Betalning" ];
+  $scope.users = [ 
+    {id: 1, name: "David"}, 
+    {id: 2, name: "Sofie"}
+  ];
+
+  $scope.categories = [ 
+    { title: "Mat", users: [1, 2], split: [60, 40] }, 
+    { title: "Gemensamt", users: [1, 2], split: [50, 50] }, 
+    { title: "Betalning", users: [1], split: [0, 100] }, 
+    { title: "Betalning", users: [2], split: [100, 0] }, 
+    { title: "Eget", users: [1], split: [100, 0] }, 
+    { title: "Eget", users: [2], split: [0, 100] }
+  ];
+
+  $scope.availableCategories = [];
 
   var refresh = function() {
     $scope.expenses = api.query({user: 1});
   }
-  refresh();
 
-  $scope.newExpense = {
-    user: 1, // TODO save last selected user
-    category: $scope.categories[0], // TODO save last selected
-    date: "2014-11-25T01:01:01Z" 
+  $scope.user = 1; // TODO save last selected user
+  $scope.category = $scope.categories[0]; // TODO save last selected
+  $scope.date = moment().utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+
+  var initExpense = function() {
+    $scope.newExpense = {
+      date: $scope.date
+    }
   }
 
   $scope.dismissError = function() {
     $scope.error = null;
   }
 
-  $scope.categoryChanged = function() {
+  $scope.userChanged = function() {
+    $scope.newExpense.user = $scope.user
+    $scope.availableCategories = $scope.categories.filter(function(elem) {
+      return elem.users.indexOf($scope.newExpense.user) > -1;
+    });
+    if ($scope.category) {
+      $scope.categoryChanged();
+    }
+  }
 
+  $scope.categoryChanged = function() {
+    $scope.newExpense.category = $scope.category.title;
+    var otherUser = $scope.newExpense.user == 1 ? 2 : 1;
+    $scope.percentage = $scope.category.split[otherUser - 1];
+
+    calcOwedFromPercentage();
   }
 
   // Four inputs depend on each other, recalc all when they change
@@ -77,11 +106,17 @@ app.controller('MainController', function($scope, $resource) {
       return;
     }
 
-    $scope.dismissError()
-      api.save($scope.newExpense, {}, function() {
-        refresh();
-      }, function(error) {
-        $scope.error = error.data.Error;
-      });
+    $scope.dismissError();
+    api.save($scope.newExpense, {}, function() {
+      initExpense();
+      refresh();
+    }, function(error) {
+      $scope.error = error.data.Error;
+    });
   }
+
+  // Call init functions
+  refresh();
+  initExpense();
+  $scope.userChanged();
 });

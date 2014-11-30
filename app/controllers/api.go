@@ -35,7 +35,7 @@ func parse(user int, category, description, date string, totalAmount, owedAmount
 	newData := models.Expense{User: user, Category: category, Description: description, TotalAmount: totalAmount, OwedAmount: owedAmount}
 	newData.ReportDate = models.GetTime()
 
-	parsedDate, validationError := time.Parse("2006-01-02T15:03:04Z", date)
+	parsedDate, validationError := time.Parse("2006-01-02T15:04:05Z", date)
 	newData.Date = parsedDate
 
 	if validationError == nil {
