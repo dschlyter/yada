@@ -27,6 +27,7 @@ app.controller('MainController', function($scope, $resource) {
   $scope.user = 1; // TODO save last selected user
   $scope.category = $scope.categories[0]; // TODO save last selected
   $scope.date = moment().utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
+  $scope.submitDisabled = false;
 
   var initExpense = function() {
     $scope.newExpense = {
@@ -102,11 +103,14 @@ app.controller('MainController', function($scope, $resource) {
 
   $scope.submitExpense = function() {
     $scope.dismissError();
+    $scope.submitDisabled = true; // Avoid multiple submits before response
     api.save($scope.newExpense, {}, function() {
       initExpense();
       refresh();
+      $scope.submitDisabled = false;
     }, function(error) {
       $scope.error = error.data.Error;
+      $scope.submitDisabled = false;
     });
   }
 
