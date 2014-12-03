@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/public/css/yada.css">
     <link rel="shortcut icon" type="image/png" href="/public/img/favicon.png">
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular-resource.js"></script>
@@ -129,16 +128,23 @@
               </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="expense in expenses" 
-              ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0}">
-              <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
-              <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
-              <td>{{users[expense.User - 1].name}}</td>
-              <td>{{expense.Category}}</td>
-              <td class="col-sm-5 hidden-xs">{{expense.Description}}</td>
-              <td>{{expense.TotalAmount}}</td>
-              <td>{{expense.OwedAmount}}</td>
-              <td>{{(user === 1 ? 1 : -1) * expense.Balance}}</td>
+            <tr ng-repeat-start="expense in expenses" 
+                ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0}" ng-click="selectRow($index)">
+                <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
+                <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
+                <td>{{users[expense.User - 1].name}}</td>
+                <td>{{expense.Category}}</td>
+                <td class="col-sm-5 hidden-xs">{{expense.Description}}</td>
+                <td>{{expense.TotalAmount}}</td>
+                <td>{{expense.OwedAmount}}</td>
+                <td>{{(user === 1 ? 1 : -1) * expense.Balance}}</td>
+            </tr>
+            <tr ng-repeat-end class="visible-xs" ng-if="selectedRow == $index" ng-click="selectRow(null)">
+                <td colspan=8>
+                    <p> <strong>Report Date:</strong> {{expense.ReportDate | date:'yyyy-MM-dd'}}</p>
+                    <p> <strong>Date:</strong> {{expense.ReportDate | date:'yyyy-MM-dd'}} </p>
+                    <p> <strong>Description:</strong> {{expense.Description}} </p>
+                </td>
             </tr>
             </tbody>
           </table>

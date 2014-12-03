@@ -114,6 +114,14 @@ app.controller('MainController', function($scope, $resource) {
     });
   }
 
+  $scope.selectRow = function(row) {
+      if ($scope.selectedRow === row) {
+          $scope.selectedRow = null;
+      } else {
+          $scope.selectedRow = row;
+      }
+  }
+
   // Call init functions
   refresh();
   initExpense();
