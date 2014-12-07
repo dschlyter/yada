@@ -3,38 +3,53 @@ var app = angular.module('app', ['ngResource']);
 app.controller('MainController', function($scope, $resource) {
   var api = $resource('api/expenses');
 
-  // Hardcoded settings for now
-  $scope.users = [ 
-    {id: 1, name: "David"}, 
-    {id: 2, name: "Sofie"}
-  ];
+  var init = function() {
+    // Hardcoded settings for now
+    $scope.users = [ 
+      {id: 1, name: "David"}, 
+      {id: 2, name: "Sofie"}
+    ];
 
-  $scope.categories = [ 
-    { title: "Mat", users: [1, 2], split: [60, 40] }, 
-    { title: "Gemensamt", users: [1, 2], split: [50, 50] }, 
-    { title: "Betalning", users: [1], split: [0, 100] }, 
-    { title: "Betalning", users: [2], split: [100, 0] }, 
-    { title: "Eget", users: [1], split: [100, 0] }, 
-    { title: "Eget", users: [2], split: [0, 100] }
-  ];
+    $scope.categories = [ 
+      { title: "Mat", users: [1, 2], split: [60, 40] }, 
+      { title: "Gemensamt", users: [1, 2], split: [50, 50] }, 
+      { title: "Betalning", users: [1], split: [0, 100] }, 
+      { title: "Betalning", users: [2], split: [100, 0] }, 
+      { title: "Eget", users: [1], split: [100, 0] }, 
+      { title: "Eget", users: [2], split: [0, 100] }
+    ];
 
-  $scope.availableCategories = [];
+    $scope.availableCategories = [];
+
+    $scope.user = 1; // TODO save last selected user
+    $scope.category = $scope.categories[0]; // TODO save last selected
+    $scope.submitDisabled = false;
+
+    refresh();
+    initExpense();
+    $scope.userChanged();
+
+    // TODO should be in a directive
+    new Pikaday({
+      field: document.getElementById('pikaday-picker'),
+      firstDay: 1,
+      yearRange: [2000,2020]
+    });
+  }
 
   var refresh = function() {
     $scope.expenses = api.query({user: 1});
   }
 
-  $scope.user = 1; // TODO save last selected user
-  $scope.category = $scope.categories[0]; // TODO save last selected
-  $scope.date = moment().utc().format("YYYY-MM-DDTHH:mm:ss") + "Z";
-  $scope.submitDisabled = false;
-
   var initExpense = function() {
     $scope.newExpense = {
       user: $scope.user,
       category: $scope.category.title,
-      date: $scope.date
     }
+
+    $scope.browserDate = moment().format("YYYY-MM-DD");
+    $scope.mobileDate = new Date();
+    $scope.dateChanged(new Date());
 
     if ($scope.form) {
         $scope.form.$setPristine()
@@ -61,6 +76,10 @@ app.controller('MainController', function($scope, $resource) {
     var otherUser = $scope.newExpense.user == 1 ? 2 : 1;
     $scope.percentage = $scope.category.split[otherUser - 1];
     $scope.percentageChanged();
+  }
+
+  $scope.dateChanged = function(newDate) {
+    $scope.newExpense.date = moment(newDate).format("YYYY-MM-DDTHH:mm:ss") + "Z";
   }
 
   // Four inputs depend on each other, recalc all when they change
@@ -120,15 +139,13 @@ app.controller('MainController', function($scope, $resource) {
   }
 
   $scope.selectRow = function(row) {
-      if ($scope.selectedRow === row) {
-          $scope.selectedRow = null;
-      } else {
-          $scope.selectedRow = row;
-      }
+    if ($scope.selectedRow === row) {
+      $scope.selectedRow = null;
+    } else {
+      $scope.selectedRow = row;
+    }
   }
 
-  // Call init functions
-  refresh();
-  initExpense();
-  $scope.userChanged();
+  // Call init last when everything has initialized
+  init();
 });
