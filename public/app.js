@@ -21,8 +21,8 @@ app.controller('MainController', function($scope, $resource) {
 
     $scope.availableCategories = [];
 
-    $scope.user = 1; // TODO save last selected user
-    $scope.category = $scope.categories[0]; // TODO save last selected
+    $scope.user = loadDefault("userid", 1);
+    $scope.category = $scope.categories[loadDefault("categoryIndex", 0)];
     $scope.submitDisabled = false;
 
     refresh();
@@ -71,9 +71,19 @@ app.controller('MainController', function($scope, $resource) {
     $scope.availableCategories = $scope.categories.filter(function(elem) {
       return elem.users.indexOf($scope.newExpense.user) > -1;
     });
-    if ($scope.category) {
-      $scope.categoryChanged();
+
+    // User change may cause current category to be unavailable
+    if ($scope.availableCategories.indexOf($scope.category) == -1) {
+      // Switch to "mirror" category if possible 
+      var mirror = $scope.availableCategories.filter(function(elem) {
+        return elem.title === $scope.category.title;
+      });
+      $scope.category = mirror ? mirror[0] : $scope.availableCategories[0]; 
     }
+
+    $scope.categoryChanged();
+
+    saveDefault("userid", $scope.user);
   }
 
   $scope.selectCategory = function(category) {
@@ -86,6 +96,11 @@ app.controller('MainController', function($scope, $resource) {
     var otherUser = $scope.newExpense.user == 1 ? 2 : 1;
     $scope.percentage = $scope.category.split[otherUser - 1];
     $scope.percentageChanged();
+
+    var index = $scope.categories.indexOf($scope.category);
+    if (index > -1) {
+      saveDefault("categoryIndex", index);
+    }
   }
 
   $scope.dateChanged = function(newDate) {
@@ -153,6 +168,27 @@ app.controller('MainController', function($scope, $resource) {
       $scope.selectedRow = null;
     } else {
       $scope.selectedRow = row;
+    }
+  }
+
+  var loadDefault = function(key, defaultValue) {
+    try {
+      var ret = localStorage[key];
+      if (ret !== undefined) {
+        return parseInt(ret);
+      }
+    } catch(e) {
+      // No op
+    }
+
+    return defaultValue;
+  }
+
+  var saveDefault = function(key, value) {
+    try {
+      localStorage[key] = value;
+    } catch(e) {
+      // No op
     }
   }
 
