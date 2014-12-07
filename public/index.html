@@ -20,7 +20,7 @@
         <div class="col-sm-12">
           <h2>Add new expense</h2>
 
-          <form class="form-horizontal" name="form" role="form" ng-submit="submitExpense()">
+          <form class="form-horizontal" name="form" role="form" ng-submit="submitExpense()" novalidate>
 
             <div class="alert alert-danger alert-dismissible" role="alert" ng-if="error">
               <button type="button" class="close" data-dismiss="alert">
@@ -103,7 +103,7 @@
                 <button type="button" class="btn btn-default" ng-click="showAdvanced = !showAdvanced">
                   Toggle Advanced
                 </button>
-                <button type="submit" class="btn btn-success pull-right" ng-disabled="submitDisabled">Add Expense</button>
+                <button type="submit" class="btn btn-success pull-right" ng-disabled="form.$invalid || submitDisabled">Add Expense</button>
               </div>
             </div>
           </form>

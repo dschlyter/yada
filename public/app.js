@@ -35,6 +35,11 @@ app.controller('MainController', function($scope, $resource) {
       category: $scope.category.title,
       date: $scope.date
     }
+
+    if ($scope.form) {
+        $scope.form.$setPristine()
+        // TODO set focus on Total field - but no DOM-manipulation in controller, hmm
+    }
   }
 
   $scope.dismissError = function() {
