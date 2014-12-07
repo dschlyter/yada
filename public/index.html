@@ -4,7 +4,7 @@
   <head>
     <title>Yet Another Debt App</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,target-densitydpi=device-dpi,user-scalable=yes" />
+    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width,height=device-height,user-scalable=yes" />
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="/public/pikaday.css">
@@ -34,22 +34,32 @@
             <div class="form-group">
               <label class="col-sm-2 control-label">User</label>
               <div class="col-sm-6">
-                <select class="form-control" required
+                <select class="form-control hidden-xs" required
                   ng-model="user"
-                  ng-options="user.id as user.name for user in users"
+                  ng-options="option.id as option.name for option in users"
                   ng-change="userChanged()">
                 </select>
+                <div class="btn-group btn-group-justified visible-xs" role="group">
+                  <div class="btn-group" role="group" ng-repeat="option in users">
+                    <button type="button" class="btn btn-default" ng-class="{'btn-primary': option.id === user}" ng-click="selectUser(option.id)">{{option.name}}</button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div class="form-group">
               <label class="col-sm-2 control-label">Category</label>
               <div class="col-sm-6">
-                <select class="form-control" required
+                <select class="form-control hidden-xs" required
                   ng-model="category" 
-                  ng-options="category as category.title for category in availableCategories"
+                  ng-options="option as option.title for option in availableCategories"
                   ng-change="categoryChanged()">
                 </select>
+                <div class="btn-group btn-group-justified visible-xs" role="group">
+                  <div class="btn-group" role="group" ng-repeat="option in availableCategories">
+                    <button type="button" class="btn btn-default" ng-class="{'btn-primary': option === category}" ng-click="selectCategory(option)">{{option.title}}</button>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -61,6 +61,11 @@ app.controller('MainController', function($scope, $resource) {
     $scope.error = null;
   }
 
+  $scope.selectUser = function(user) {
+    $scope.user = user;
+    $scope.userChanged();
+  }
+
   $scope.userChanged = function() {
     $scope.newExpense.user = $scope.user
     $scope.availableCategories = $scope.categories.filter(function(elem) {
@@ -69,6 +74,11 @@ app.controller('MainController', function($scope, $resource) {
     if ($scope.category) {
       $scope.categoryChanged();
     }
+  }
+
+  $scope.selectCategory = function(category) {
+    $scope.category = category;
+    $scope.categoryChanged();
   }
 
   $scope.categoryChanged = function() {
