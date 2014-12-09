@@ -47,9 +47,10 @@ app.controller('MainController', function($scope, $resource) {
       category: $scope.category.title,
     }
 
-    $scope.browserDate = moment().format("YYYY-MM-DD");
-    $scope.mobileDate = new Date();
-    $scope.dateChanged(new Date());
+    today = moment().startOf("day")
+    $scope.browserDate = today.format("YYYY-MM-DD");
+    $scope.mobileDate = today.toDate();
+    $scope.dateChanged(today);
 
     if ($scope.form) {
         $scope.form.$setPristine()
@@ -161,6 +162,10 @@ app.controller('MainController', function($scope, $resource) {
       $scope.error = error.data.Error;
       $scope.submitDisabled = false;
     });
+  }
+
+  $scope.isFuture = function(expense) {
+    return expense && moment(expense.Date).isAfter(moment())
   }
 
   $scope.selectRow = function(row) {

@@ -91,7 +91,7 @@
               <div class="form-group" ng-class="{'has-error': form.percentage.$invalid}">
                 <label class="col-sm-2 control-label">Percentage</label>
                 <div class="col-sm-6">
-                  <input class="form-control" name="percentage" type="number" min="0" max="100" ng-model="percentage" ng-change="percentageChanged()"/>
+                  <input class="form-control" name="percentage" type="number" min="0" max="100" ng-model="percentage" ng-change="percentageChanged()" required/>
                 </div>
               </div>
 
@@ -143,7 +143,7 @@
             </thead>
             <tbody>
             <tr ng-repeat-start="expense in expenses" 
-                ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0}" ng-click="selectRow($index)">
+                ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0, 'info': isFuture(expense)}" ng-click="selectRow($index)">
                 <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
                 <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
                 <td>{{users[expense.User - 1].name}}</td>
@@ -151,7 +151,7 @@
                 <td class="col-sm-5 hidden-xs">{{expense.Description}}</td>
                 <td>{{expense.TotalAmount}}</td>
                 <td>{{expense.OwedAmount}}</td>
-                <td>{{(user === 1 ? 1 : -1) * expense.Balance}}</td>
+                <td>{{!isFuture(expense) ? (user === 1 ? 1 : -1) * expense.Balance : ""}}</td>
             </tr>
             <tr ng-repeat-end class="visible-xs" ng-if="selectedRow == $index" ng-click="selectRow(null)">
                 <td colspan=8>
