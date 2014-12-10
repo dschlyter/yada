@@ -18,6 +18,7 @@ func (t *ApiTest) Before() {
 	models.CloseDB()
 	os.RemoveAll(models.DB_TEST) // Wipe previous data
 	models.InitDB(models.DB_TEST)
+	timeIs("2014-08-25T12:00:00")
 }
 
 func (t *ApiTest) After() {
@@ -148,6 +149,48 @@ func (t ApiTest) TestExpenseSummingForUser2() {
 	t.AssertEqual(-100, result[0].Balance)
 	t.AssertEqual(-120, result[1].Balance)
 	t.AssertEqual(-60, result[2].Balance)
+}
+
+func (t ApiTest) addSixExpenses() {
+	v := exampleData()
+
+	v.Set("description", "first")
+	t.post(v)
+
+	v.Set("description", "second")
+	t.post(v)
+
+	v.Set("description", "third")
+	t.post(v)
+
+	v.Set("description", "fourth")
+	t.post(v)
+
+	v.Set("description", "fifth")
+	t.post(v)
+
+	v.Set("description", "last")
+	t.post(v)
+}
+
+func (t ApiTest) TestLimitOfExpenses() {
+	t.addSixExpenses()
+
+	result := t.get("1&limit=5")
+
+	t.AssertEqual(5, len(result))
+	t.AssertEqual("second", result[4].Description)
+	t.AssertEqual("last", result[0].Description)
+}
+
+func (t ApiTest) TestFetchExpensesByNextKey() {
+	t.addSixExpenses()
+
+	result1 := t.get("1&limit=3")
+	result2 := t.get("1&limit=3&afterKey=" + result1[2].Id)
+
+	t.AssertEqual("third", result2[0].Description)
+	t.AssertEqual("first", result2[2].Description)
 }
 
 func (t ApiTest) TestNegativeAmount_AllowedAndDecreasesSum() {

@@ -68,8 +68,16 @@ func validateUser(user int) error {
 	return nil
 }
 
-func (c Api) List(nextKey string, user, limit int) revel.Result {
+func (c Api) List(afterKey string, user, limit int) revel.Result {
 	err := validateUser(user)
+
+	if afterKey == "" {
+		afterKey = "LAST" // Default, higher than any timestamp
+	}
+
+	if limit <= 0 {
+		limit = 10 // Default
+	}
 
 	var list []models.Expense
 	if err == nil {
@@ -92,5 +100,19 @@ func (c Api) List(nextKey string, user, limit int) revel.Result {
 		expense.Balance = balance
 	}
 
-	return c.RenderJson(list)
+	start := 0
+	for i := 0; i < len(list); i++ {
+		if list[i].Id < afterKey {
+			start = i
+			break
+		}
+	}
+
+	end := start + limit
+
+	if end > len(list) {
+		end = len(list)
+	}
+
+	return c.RenderJson(list[start:end])
 }

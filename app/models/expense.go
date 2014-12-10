@@ -6,6 +6,7 @@ import (
 )
 
 type Expense struct {
+	Id                      string
 	User                    int
 	Category, Description   string
 	TotalAmount, OwedAmount int
@@ -14,37 +15,41 @@ type Expense struct {
 }
 
 func (t Expense) key() string {
+	date := t.Date
+
 	if t.ReportDate.After(t.Date) {
-		return t.ReportDate.String()
+		date = t.ReportDate
 	}
 
-	return t.Date.String()
+	return date.Format("2006-01-02T15:04:05Z")
 }
 
 func (exp Expense) Save() (err error) {
+	exp.Id = exp.key()
 	data, err := json.Marshal(exp)
 	if err != nil {
 		return
 	}
 
-	return save(exp.key(), data)
+	return save(exp.Id, data)
 }
 
 func ListExpenses() (ret []Expense, err error) {
-	dataList, err := get("", 10)
+	blobs, err := getBlobs()
 	if err != nil {
 		return nil, err
 	}
 
 	ret = []Expense{}
 
-	for _, data := range dataList {
-		element := Expense{}
-		err := json.Unmarshal(data, &element)
+	for _, data := range blobs {
+		exp := Expense{}
+		err := json.Unmarshal(data.Value, &exp)
 		if err != nil {
 			return nil, err
 		}
-		ret = append(ret, element)
+		exp.Id = data.Key
+		ret = append(ret, exp)
 	}
 
 	return

@@ -3,11 +3,13 @@ package models
 import (
 	"math/rand"
 	"strconv"
+	"sync/atomic"
 
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
 var store *leveldb.DB
+var suffix uint64
 
 const (
 	DB      = "level.db"
@@ -23,6 +25,7 @@ func InitDB(dbName string) {
 		panic(err)
 	}
 	store = db
+	suffix = uint64(rand.Int63())
 }
 
 func CloseDB() {
@@ -42,12 +45,17 @@ func save(keyPrefix string, data []byte) (err error) {
 }
 
 func createKey(keyPrefix string) (ret string) {
-	ret = keyPrefix + "-" + strconv.Itoa(rand.Int())
+	ctr := atomic.AddUint64(&suffix, 1)
+	ret = keyPrefix + "-" + strconv.FormatUint(ctr, 10)
 	return
 }
 
-// TODO actually care about limit on persistance side?
-func get(nextKey string, limit int) (values [][]byte, err error) {
+type KV struct {
+	Key   string
+	Value []byte
+}
+
+func getBlobs() (values []KV, err error) {
 	iter := store.NewIterator(nil, nil)
 	defer iter.Release()
 
@@ -60,7 +68,7 @@ func get(nextKey string, limit int) (values [][]byte, err error) {
 		// this is slightly wasteful, maybe serialize json directly
 		newBytes := make([]byte, len(iter.Value()))
 		copy(newBytes, iter.Value())
-		values = append(values, newBytes)
+		values = append(values, KV{string(iter.Key()), newBytes})
 
 		keyExists = iter.Prev()
 	}
