@@ -20,7 +20,9 @@ func ClearMockTime() {
 
 func GetTime() time.Time {
 	if mockTime == nil {
-		return time.Now()
+		ret := time.Now()
+		ret = ret.Round(time.Second)
+		return ret
 	} else {
 		return *mockTime
 	}
