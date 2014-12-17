@@ -100,7 +100,8 @@ func (c Api) List(afterKey string, user, limit int) revel.Result {
 		expense.Balance = balance
 	}
 
-	start := 0
+	// TODO propagate to golang range (when balance is calculated more efficiently)
+	start := len(list)
 	for i := 0; i < len(list); i++ {
 		if list[i].Id < afterKey {
 			start = i

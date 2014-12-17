@@ -14,6 +14,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.js"></script>
     <script src="/public/pikaday.js"></script>
     <script src="/public/app.js"></script>
+    <script src="/public/directives.js"></script>
   </head>
 
   <body ng-app="app">
@@ -128,7 +129,7 @@
         <div class="col-sm-12">
           <h2>History</h2>
 
-          <table class="table table-striped">
+          <table class="table table-striped" infinite-scroll="fetchMoreExpenses">
             <thead>
               <tr>
                 <th class="hidden-xs">Report Date</th>

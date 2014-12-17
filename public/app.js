@@ -1,9 +1,9 @@
 var app = angular.module('app', ['ngResource']);
 
 app.controller('MainController', function($scope, $resource) {
-  var api = $resource('api/expenses');
-
   var init = function() {
+    $scope.expenses = [];
+
     // Hardcoded settings for now
     $scope.users = [ 
       {id: 1, name: "David"}, 
@@ -25,7 +25,7 @@ app.controller('MainController', function($scope, $resource) {
     $scope.category = $scope.categories[loadDefault("categoryIndex", 0)];
     $scope.submitDisabled = false;
 
-    refresh();
+    $scope.fetchLatestExpenses();
     initExpense();
     $scope.userChanged();
 
@@ -37,8 +37,65 @@ app.controller('MainController', function($scope, $resource) {
     });
   }
 
-  var refresh = function() {
-    $scope.expenses = api.query({user: 1});
+  // TODO extract to data service?
+  var api = $resource('api/expenses');
+  var requestInProgress = false;
+  var everythingFetched = false;
+
+  $scope.fetchLatestExpenses = function() {
+    fetchExpenses(undefined);
+  }
+
+  $scope.fetchMoreExpenses = function() {
+    if (requestInProgress || everythingFetched) {
+      return;
+    }
+
+    var afterKey = undefined;
+    if ($scope.expenses.length > 0) {
+      afterKey = $scope.expenses[$scope.expenses.length -1].Id;
+    }
+    fetchExpenses(afterKey);
+  }
+
+  var fetchExpenses = function(afterKey) {
+    var query = {user: 1, limit: 20};
+
+    if (afterKey !== undefined) {
+      query.afterKey = afterKey;
+    }
+      
+    requestInProgress = true;
+    var newData = api.query(query, function() {
+      var mergedList = [];
+
+      var oldIndex = 0;
+      var newIndex = 0;
+      do {
+        var oldId = oldIndex < $scope.expenses.length ? $scope.expenses[oldIndex].Id : "";
+        var newId = newIndex < newData.length ? newData[newIndex].Id : "";
+
+        // Merge largest id into list, skip new if ids are equal
+        if (oldId > newId) {
+          mergedList.push($scope.expenses[oldIndex]);
+          oldIndex++;
+        } else if (newId > oldId) {
+          mergedList.push(newData[newIndex]);
+          newIndex++;
+        } else {
+          newIndex++
+        }
+      } while (oldId !== "" || newId !== "");
+
+      $scope.expenses = mergedList;
+      requestInProgress = false;
+      if (newData.length === 0) {
+        everythingFetched = true;
+      }
+    }, function(error) {
+      console.log(error);
+      requestInProgress = false;
+    });
   }
 
   var initExpense = function() {
@@ -156,7 +213,7 @@ app.controller('MainController', function($scope, $resource) {
     $scope.submitDisabled = true; // Avoid multiple submits before response
     api.save($scope.newExpense, {}, function() {
       initExpense();
-      refresh();
+      $scope.fetchLatestExpenses();
       $scope.submitDisabled = false;
     }, function(error) {
       $scope.error = error.data.Error;
@@ -176,6 +233,7 @@ app.controller('MainController', function($scope, $resource) {
     }
   }
 
+  // TODO extract to service
   var loadDefault = function(key, defaultValue) {
     try {
       var ret = localStorage[key];
