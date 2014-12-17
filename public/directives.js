@@ -18,3 +18,16 @@ app.directive('infiniteScroll', function($interval) {
     }
   }
 });
+
+app.directive('pikaday', function() {
+  return {
+    link: function(scope, element, attrs) {
+      console.log(element);
+      new Pikaday({
+        field: element[0],
+        firstDay: 1,
+        yearRange: [2000,2050]
+      });
+    }
+  }
+});

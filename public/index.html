@@ -84,7 +84,7 @@
                 ng-class="{'has-error': form.browserDate.$invalid || form.mobileDate.$invalid}">
                 <label class="col-sm-2 control-label">Date</label>
                 <div class="col-sm-6">
-                  <input class="form-control hidden-xs" type="text" id="pikaday-picker" name="browserDate" ng-model="browserDate" ng-change="dateChanged(browserDate)" required>
+                  <input class="form-control hidden-xs" pikaday type="text" name="browserDate" ng-model="browserDate" ng-change="dateChanged(browserDate)" required>
                   <input class="form-control visible-xs" name="mobileDate" type="date" ng-model="mobileDate" ng-change="dateChanged(mobileDate)" required>
                 </div>
               </div>

@@ -28,13 +28,6 @@ app.controller('MainController', function($scope, $resource) {
     $scope.fetchLatestExpenses();
     initExpense();
     $scope.userChanged();
-
-    // TODO should be in a directive
-    new Pikaday({
-      field: document.getElementById('pikaday-picker'),
-      firstDay: 1,
-      yearRange: [2000,2020]
-    });
   }
 
   // TODO extract to data service?
