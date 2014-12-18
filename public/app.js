@@ -86,9 +86,16 @@ app.controller('MainController', function($scope, $resource) {
         everythingFetched = true;
       }
     }, function(error) {
-      console.log(error);
+      setError(error);
       requestInProgress = false;
     });
+  }
+
+  var setError = function(error) {
+    $scope.error = "Connection Error"
+    if (error && error.data && error.data.Error) {
+      $scope.error = error.data.Error
+    }
   }
 
   var initExpense = function() {
@@ -209,7 +216,7 @@ app.controller('MainController', function($scope, $resource) {
       $scope.fetchLatestExpenses();
       $scope.submitDisabled = false;
     }, function(error) {
-      $scope.error = error.data.Error;
+      setError(error);
       $scope.submitDisabled = false;
     });
   }

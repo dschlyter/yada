@@ -67,7 +67,7 @@
             <div class="form-group" ng-class="{'has-error': form.total.$invalid && form.total.$dirty}">
               <label class="col-sm-2 control-label">Total</label>
               <div class="col-sm-6">
-                <input class="form-control" name="total" type="number" required ng-model="newExpense.totalAmount" ng-change="totalChanged()"/>
+                <input class="form-control" name="total" type="number" ng-pattern="/^-?[0-9]*$/" required ng-model="newExpense.totalAmount" ng-change="totalChanged()"/>
               </div>
             </div>
 
@@ -92,14 +92,14 @@
               <div class="form-group" ng-class="{'has-error': form.percentage.$invalid}">
                 <label class="col-sm-2 control-label">Percentage</label>
                 <div class="col-sm-6">
-                  <input class="form-control" name="percentage" type="number" min="0" max="100" ng-model="percentage" ng-change="percentageChanged()" required/>
+                  <input class="form-control" name="percentage" type="number" ng-pattern="/^-?[0-9]*$/" min="0" max="100" ng-model="percentage" ng-change="percentageChanged()" required/>
                 </div>
               </div>
 
               <div class="form-group" ng-class="{'has-error': form.owed.$invalid}">
                 <label class="col-sm-2 control-label">Owed</label>
                 <div class="col-sm-6">
-                  <input class="form-control" name="owed" type="number" ng-model="newExpense.owedAmount" ng-change="owedChanged()"/>
+                  <input class="form-control" name="owed" type="number" ng-pattern="/^-?[0-9]*$/" ng-model="newExpense.owedAmount" ng-change="owedChanged()"/>
                 </div>
               </div>
 
