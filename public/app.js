@@ -233,6 +233,35 @@ app.controller('MainController', function($scope, $resource) {
     }
   }
 
+  $scope.searchFilter = function(query) {
+    query = query || ""
+    var tokens = query.toLowerCase().split(" ");
+
+    var match = function(token, value) {
+      value = "" + value;
+      return value.toLowerCase().indexOf(token) > -1;
+    }
+
+    return function(item) {
+      for (var i=0; i<tokens.length; i++) {
+        var token = tokens[i];
+        if (!(
+              match(token, item.ReportDate) || 
+              match(token, item.Date) || 
+              match(token, $scope.users[item.User-1].name) || 
+              match(token, item.Category) || 
+              match(token, item.Description) || 
+              match(token, item.TotalAmount) || 
+              match(token, item.OwedAmount)
+              )) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+  }
+
   // TODO extract to service
   var loadDefault = function(key, defaultValue) {
     try {

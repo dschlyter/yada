@@ -128,7 +128,7 @@
       <div class="row">
         <div class="col-sm-12">
           <h2>History</h2>
-          <input class="form-control" ng-model="search" placeholder="search"/>
+          <input class="form-control" ng-model="searchQuery" placeholder="search"/>
 
           <table class="table table-striped" infinite-scroll="fetchMoreExpenses">
             <thead>
@@ -144,7 +144,7 @@
               </tr>
             </thead>
             <tbody>
-            <tr ng-repeat-start="expense in expenses | filter : search" 
+            <tr ng-repeat-start="expense in expenses | filter:searchFilter(searchQuery)" 
                 ng-class="{'text-muted': expense.OwedAmount === 0, 'text-info': expense.OwedAmount < 0, 'text-danger': user !== expense.User && expense.OwedAmount > 0, 'info': isFuture(expense)}" ng-click="selectRow($index)">
                 <td class="hidden-xs">{{expense.ReportDate | date:'yyyy-MM-dd'}}</td>
                 <td class="hidden-xs">{{expense.Date | date:'yyyy-MM-dd'}}</td>
