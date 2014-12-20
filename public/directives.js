@@ -14,7 +14,7 @@ app.directive('infiniteScroll', function($interval) {
         check();
       };
 
-      $interval(check, 1000);
+      $interval(check, 100);
     }
   }
 });
